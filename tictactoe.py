@@ -55,8 +55,174 @@ def win_cond(board):
     ## If win condition not met, return false
     return False
 
-## gameflow() runs the game until it is won lost or drawn
-def gameflow():
+## procedure that takes input of board and outputs a move based on a set of rules
+def comp_opening_move():
+    ## go to corners 60% of time
+    ## centre 30% and middle 10%
+    import random
+    start_move = random.randint(1, 10)
+    ## if start_move == 1 chose randomly between the 4 side places
+    if start_move == 1:
+        side_move = random.randint(1, 4)
+        if side_move == 1:
+            return 'b1'
+        if side_move == 2:
+            return 'a2'
+        if side_move == 3:
+            return 'c2'
+        if side_move == 4:
+            return 'b3'
+
+    ## if start_move is 2, 3, or 4 choose the centre spot
+    if start_move > 1 and start_move < 5:
+        return 'b2'
+
+    ## if start move == 5 - 10 choose randomly from the corners
+    if start_move > 4:
+        corner_move = random.randint(1, 4)
+        if corner_move == 1:
+            return 'a1'
+        if corner_move == 2:
+            return 'c1'
+        if corner_move == 3:
+            return 'a3'
+        if corner_move == 4:
+            return 'c3'
+
+def who_starts():
+    print ''
+    coin_side = raw_input('Do you want (h)eads or (t)ails? ')
+
+    if coin_side == 'h':
+        coin_side_long = "heads"
+        coin_side_bin = 0
+    if coin_side == 't':
+        coin_side_long = "tails"
+        coin_side_bin = 1
+    print "\nYou chose " + coin_side_long + '\n'
+    print 'Getting ready to flip coin\n'
+    import time
+    time.sleep(1)
+    print 'Coin has been flipped\n'
+    time.sleep(1)
+    print 'Coin is in the air, which side will it land on?\n'
+    time.sleep(1)
+    print 'This will determine who starts the game\n'
+    time.sleep(1)
+    print 'OMG\n'
+    time.sleep(1)
+    print 'coin about to land!\n'
+    time.sleep(1)
+    import random
+    coin_flip = random.randint(0, 1)
+    if coin_side_bin == coin_flip:
+        print "Congratulations its " + coin_side_long + ", you start!\n"
+        return True
+    if coin_side_bin != coin_flip:
+        print "Computer wins, computer starts!"
+        return False
+
+def turn_select(turn, do_you_start):
+    if do_you_start == True:
+        if turn % 2 == 1:
+            player_chip = 'x'
+            opp_chip = 'o'
+        else:
+            player_chip = 'o'
+            opp_chip = 'x'
+    if do_you_start == False:
+        if turn % 2 == 1:
+            player_chip = 'o'
+            opp_chip = 'x'
+        else:
+            player_chip = 'x'
+            opp_chip = 'o'
+    return player_chip, opp_chip
+
+## empty_spaces() takes the board and returns a list of spaces which are empty_spaces
+## eg ['a1', 'b3', 'c2'], and the the length of the list
+def empty_spaces(board):
+    list_of_empty = []
+    for i in range(0, 3):
+        for j in range(0, 3):
+            if board[i][j] == ' ':
+                list_of_empty.append(index[i][j])
+    return list_of_empty, len(list_of_empty)
+
+def comp_random_move():
+    list_of_empty, num_empty_spaces = empty_spaces(board)
+    import random
+    choose_random_space = random.randint(0, num_empty_spaces)
+    return list_of_empty[choose_random_space]
+
+## plays the game vs the computer
+def vs_comp():
+
+    print "computer is the 'x' and you are the 'o'"
+    print "we will flip a coin to see who starts"
+    do_you_start = who_starts()
+
+    print draw_board(board)
+
+    turn = 0
+
+    while turn < 9:
+        ## determines the correct player chip and opponent chip for the turn
+        player_chip, opp_chip = turn_select(turn, do_you_start)
+
+        ## runs through what happens for each human turn
+        if player_chip == 'o':
+            ## Displays who's turn it is and requests player move
+            print "It is your turn Player: " + player_chip
+            loc_in = raw_input("Where would you like to move to? ")
+
+            ## assign i and j using tfr_loc()
+            i, j = tfr_loc(loc_in, index)
+
+            ## check if space is free using space_free()
+            if space_free(i, j) == True:
+                ## update board to include new move
+                board[i][j] = player_chip
+                ## displays board with new move
+                print draw_board(board)
+                ## test if win condition met after the latest move - If met declear winner
+                if win_cond(board) == True:
+                    print "Congratulations Player " + player_chip + " - You Win!!!"
+                    return
+                ## turn count increases to next turn
+                turn = turn + 1
+            else:
+                print "The space you have selected is either invalid or not occupied"
+                print draw_board(board)
+
+        ## runs through computers turn
+        if player_chip == 'x':
+            print 'It is computers turn'
+            comp_move = comp_random_move()
+            import time
+            time.sleep(1)
+            print 'Computer decides to take space ' + comp_move
+            ## assign i and j using tfr_loc()
+            i, j = tfr_loc(comp_move, index)
+            ## update the board to reflect the computers move
+            board[i][j] = player_chip
+            ## displays board with new move
+            print draw_board(board)
+            ## test if win condition met after the latest move - If met declear winner
+            if win_cond(board) == True:
+                print "You lose, computer is victorious!"
+                return
+            ## turn count increases to next turn
+            turn = turn + 1
+
+        ## If all board filled up display draw message
+        if turn == 9:
+            print "This game is a draw."
+
+    return
+
+## two_player_game() runs the game until it is won lost or drawn
+def two_player_game():
     ## set initial turn to be turn 0
     turn = 0
 
@@ -100,4 +266,5 @@ def gameflow():
             print "This game is a draw."
     return
 
-print gameflow()
+print vs_comp()
+## print comp_opening_move()
