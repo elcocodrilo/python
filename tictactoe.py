@@ -119,7 +119,7 @@ def who_starts():
         print "Congratulations its " + coin_side_long + ", you start!\n"
         return True
     if coin_side_bin != coin_flip:
-        print "Computer wins, computer starts!"
+        print "Computer wins coin flip, computer starts!"
         return False
 
 def turn_select(turn, do_you_start):
@@ -147,120 +147,110 @@ def empty_spaces(board):
         for j in range(0, 3):
             if board[i][j] == ' ':
                 list_of_empty.append(index[i][j])
-    return list_of_empty, len(list_of_empty)
+    return list_of_empty
 
-def comp_random_move():
-    list_of_empty, num_empty_spaces = empty_spaces(board)
-    import random
-    choose_random_space = random.randint(0, num_empty_spaces)
+def comp_random_move(random):
+    list_of_empty = empty_spaces(board)
+    choose_random_space = random.randint(0, (len(list_of_empty) - 1))
     return list_of_empty[choose_random_space]
+
+def human_turn(player_chip, index, board, turn):
+    ## Displays who's turn it is and requests player move
+    print "It is your turn Player: " + player_chip
+    loc_in = raw_input("Where would you like to move to? ")
+
+    ## assign i and j using tfr_loc()
+    i, j = tfr_loc(loc_in, index)
+
+    ## check if space is free using space_free()
+    if space_free(i, j) == True:
+        ## update board to include new move
+        board[i][j] = player_chip
+        ## displays board with new move
+        print draw_board(board)
+        ## test if win condition met after the latest move - If met declear winner
+        if win_cond(board) == True:
+            print "Congratulations Player " + player_chip + " - You Win!!!"
+            turn = -1
+            return turn
+        ## turn count increases to next turn
+        turn = turn + 1
+    else:
+        print "The space you have selected is either invalid or not occupied"
+        print draw_board(board)
+    return turn
+
+def comp_turn(player_chip, index, board, turn, random, time):
+    print 'It is computers turn'
+    if len(empty_spaces(board)) == 9:
+        comp_move = comp_opening_move()
+    #elif can_fin:
+        ## insert move to finish
+    else:
+        comp_move = comp_random_move(random)
+    time.sleep(1)
+    print 'Computer decides to take space ' + comp_move
+    ## assign i and j using tfr_loc()
+    i, j = tfr_loc(comp_move, index)
+    ## update the board to reflect the computers move
+    board[i][j] = player_chip
+    ## displays board with new move
+    print draw_board(board)
+    ## test if win condition met after the latest move - If met declear winner
+    if win_cond(board) == True:
+        print "You lose, computer is victorious!"
+        turn = -1
+        return turn
+    ## turn count increases to next turn
+    turn = turn + 1
+    return turn
 
 ## plays the game vs the computer
 def vs_comp():
+    import time
+    import random
 
     print "computer is the 'x' and you are the 'o'"
     print "we will flip a coin to see who starts"
     do_you_start = who_starts()
-
+    ## print empty board
     print draw_board(board)
-
+    ## initialise turn to 0
     turn = 0
-
     while turn < 9:
         ## determines the correct player chip and opponent chip for the turn
         player_chip, opp_chip = turn_select(turn, do_you_start)
-
         ## runs through what happens for each human turn
         if player_chip == 'o':
-            ## Displays who's turn it is and requests player move
-            print "It is your turn Player: " + player_chip
-            loc_in = raw_input("Where would you like to move to? ")
-
-            ## assign i and j using tfr_loc()
-            i, j = tfr_loc(loc_in, index)
-
-            ## check if space is free using space_free()
-            if space_free(i, j) == True:
-                ## update board to include new move
-                board[i][j] = player_chip
-                ## displays board with new move
-                print draw_board(board)
-                ## test if win condition met after the latest move - If met declear winner
-                if win_cond(board) == True:
-                    print "Congratulations Player " + player_chip + " - You Win!!!"
-                    return
-                ## turn count increases to next turn
-                turn = turn + 1
-            else:
-                print "The space you have selected is either invalid or not occupied"
-                print draw_board(board)
-
+            turn = human_turn(player_chip, index, board, turn)
         ## runs through computers turn
         if player_chip == 'x':
-            print 'It is computers turn'
-            comp_move = comp_random_move()
-            import time
-            time.sleep(1)
-            print 'Computer decides to take space ' + comp_move
-            ## assign i and j using tfr_loc()
-            i, j = tfr_loc(comp_move, index)
-            ## update the board to reflect the computers move
-            board[i][j] = player_chip
-            ## displays board with new move
-            print draw_board(board)
-            ## test if win condition met after the latest move - If met declear winner
-            if win_cond(board) == True:
-                print "You lose, computer is victorious!"
-                return
-            ## turn count increases to next turn
-            turn = turn + 1
-
+            turn = comp_turn(player_chip, index, board, turn, random, time)
+        ## ends procedure if game has been won
+        if turn == -1:
+            return
         ## If all board filled up display draw message
         if turn == 9:
             print "This game is a draw."
-
     return
 
 ## two_player_game() runs the game until it is won lost or drawn
 def two_player_game():
     ## set initial turn to be turn 0
     turn = 0
-
     ## print blank board
     print draw_board(board)
-
     ## while loop runs until board is full and game is drawn
     while turn < 9:
-
         ## Determines who's turn is
         if turn % 2 == 1:
             player_chip = 'x'
         else:
             player_chip = 'o'
-
-        ## Displays who's turn it is and requests player move
-        print "Player: " + player_chip
-        loc_in = raw_input("Where would you like to move to? ")
-
-        ## assign i and j using tfr_loc()
-        i, j = tfr_loc(loc_in, index)
-
-        ## check if space is free using space_free()
-        if space_free(i, j) == True:
-            ## update board to include new move
-            board[i][j] = player_chip
-            ## displays board with new move
-            print draw_board(board)
-            ## test if win condition met after the latest move - If met declear winner
-            if win_cond(board) == True:
-                print "Congratulations Player " + player_chip + " - You Win!!!"
-                return
-            ## turn count increases to next turn
-            turn = turn + 1
-        else:
-            print "The space you have selected is either invalid or not occupied"
-            print draw_board(board)
-
+        turn = human_turn(player_chip, index, board, turn)
+        ## exit procedure if game has ended
+        if turn == -1:
+            return
         ## If all board filled up display draw message
         if turn == 9:
             print "This game is a draw."
