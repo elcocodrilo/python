@@ -4,7 +4,8 @@
 ## create empty board
 board = [[' ', ' ', ' '], [' ', ' ', ' '], [' ', ' ', ' ']]
 ## create index used for player input to enter the square
-index = [['a1', 'b1', 'c1'], ['a2', 'b2', 'c2'], ['a3', 'b3', 'c3']]
+index = [['1a', '1b', '1c'], ['2a', '2b', '2c'], ['3a', '3b', '3c']]
+index2 = [['a1', 'b1', 'c1'], ['a2', 'b2', 'c2'], ['a3', 'b3', 'c3']]
 
 def draw_board(board):
     print '\n'
@@ -21,10 +22,12 @@ def draw_board(board):
 
 ## transfer player input to find location on the board
 ## takes the location input and the index nested list, returns i (for row) and j (for column)
-def tfr_loc(loc_in, index):
+def tfr_loc(loc_in, index, index2):
     for i in range(0, 3):
         for j in range(0, 3):
             if loc_in == index[i][j]:
+                return i, j
+            elif loc_in == index2[i][j]:
                 return i, j
     return 'x', 'x'
 
@@ -154,13 +157,46 @@ def comp_random_move(random):
     choose_random_space = random.randint(0, (len(list_of_empty) - 1))
     return list_of_empty[choose_random_space]
 
-def human_turn(player_chip, index, board, turn):
+## def make_line_vects(board):
+
+
+## check all lines to see if there is a finishing move available,
+## if there is one avalable return true and the
+## if not return False for move available
+
+## check line by line, if a finishing move is available return True and return the move
+def comp_finmove(board, player_chip):
+    ## check all horizontal finishing moves avaialble to computer
+    for i in range(0, 3):
+        line = []
+        for j in range(0, 3):
+            line.append(board[i][j])
+        line_empty = line.count(' ')
+        line_player_chip = line.count(player_chip)
+        if line_empty == 1 and line_player_chip == 2:
+                j = line.index(' ')
+                return True, index[i][j]
+    ## check all vertical finishing moves avaialble to comp
+    for i in range(0, 3):
+        line = []
+        for j in range(0, 3):
+            line.append(board[j][i])
+        line_empty = line.count(' ')
+        line_player_chip = line.count(player_chip)
+        if line_empty == 1 and line_player_chip == 2:
+                j = line.index(' ')
+                return True, index[j][i]
+
+    ## check diagonal finishing moves avaialble to comp
+    return False, ' '
+
+def human_turn(player_chip, index, board, turn, index2):
     ## Displays who's turn it is and requests player move
     print "It is your turn Player: " + player_chip
     loc_in = raw_input("Where would you like to move to? ")
 
     ## assign i and j using tfr_loc()
-    i, j = tfr_loc(loc_in, index)
+    i, j = tfr_loc(loc_in, index, index2)
 
     ## check if space is free using space_free()
     if space_free(i, j) == True:
@@ -180,18 +216,19 @@ def human_turn(player_chip, index, board, turn):
         print draw_board(board)
     return turn
 
-def comp_turn(player_chip, index, board, turn, random, time):
+def comp_turn(player_chip, index, board, turn, random, time, index2):
     print 'It is computers turn'
+    can_comp_fin, comp_fin_moveref = comp_finmove(board, player_chip)
     if len(empty_spaces(board)) == 9:
         comp_move = comp_opening_move()
-    #elif can_fin:
-        ## insert move to finish
+    elif can_comp_fin == True:
+        comp_move = comp_fin_moveref
     else:
         comp_move = comp_random_move(random)
     time.sleep(1)
     print 'Computer decides to take space ' + comp_move
     ## assign i and j using tfr_loc()
-    i, j = tfr_loc(comp_move, index)
+    i, j = tfr_loc(comp_move, index, index2)
     ## update the board to reflect the computers move
     board[i][j] = player_chip
     ## displays board with new move
@@ -222,10 +259,10 @@ def vs_comp():
         player_chip, opp_chip = turn_select(turn, do_you_start)
         ## runs through what happens for each human turn
         if player_chip == 'o':
-            turn = human_turn(player_chip, index, board, turn)
+            turn = human_turn(player_chip, index, board, turn, index2)
         ## runs through computers turn
         if player_chip == 'x':
-            turn = comp_turn(player_chip, index, board, turn, random, time)
+            turn = comp_turn(player_chip, index, board, turn, random, time, index2)
         ## ends procedure if game has been won
         if turn == -1:
             return
@@ -247,7 +284,7 @@ def two_player_game():
             player_chip = 'x'
         else:
             player_chip = 'o'
-        turn = human_turn(player_chip, index, board, turn)
+        turn = human_turn(player_chip, index, board, turn, index2)
         ## exit procedure if game has ended
         if turn == -1:
             return
