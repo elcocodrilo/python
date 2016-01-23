@@ -157,13 +157,6 @@ def comp_random_move(random):
     choose_random_space = random.randint(0, (len(list_of_empty) - 1))
     return list_of_empty[choose_random_space]
 
-## def make_line_vects(board):
-
-
-## check all lines to see if there is a finishing move available,
-## if there is one avalable return true and the
-## if not return False for move available
-
 ## check line by line, if a finishing move is available return True and return the move
 def comp_finmove(board, player_chip):
     ## check all horizontal finishing moves avaialble to computer
@@ -186,8 +179,79 @@ def comp_finmove(board, player_chip):
         if line_empty == 1 and line_player_chip == 2:
                 j = line.index(' ')
                 return True, index[j][i]
-
     ## check diagonal finishing moves avaialble to comp
+    ## check line 1a, 2b, 3c
+    line = []
+    line.append(board[0][0])
+    line.append(board[1][1])
+    line.append(board[2][2])
+    line_empty = line.count(' ')
+    line_player_chip = line.count(player_chip)
+    if line_empty == 1 and line_player_chip == 2:
+            j = line.index(' ')
+            return True, index[j][j]
+
+    ## check line 1c, 2b, 3a
+    line = []
+    line.append(board[0][2])
+    line.append(board[1][1])
+    line.append(board[2][0])
+    line_empty = line.count(' ')
+    line_player_chip = line.count(player_chip)
+    if line_empty == 1 and line_player_chip == 2:
+            j = line.index(' ')
+            return True, index[j][2 - j]
+
+    ## if no finishing move avaialble return False and no move
+    return False, ' '
+
+## same as comp_finmove() but checks for opponent finishing moves and blocks them
+## if a blocking move is avaiable will return "True" and the move
+def comp_block_opp_fin(board, opp_chip):
+    ## check all horizontal finishing moves avaialble to human
+    for i in range(0, 3):
+        line = []
+        for j in range(0, 3):
+            line.append(board[i][j])
+        line_empty = line.count(' ')
+        line_opp_chip = line.count(opp_chip)
+        if line_empty == 1 and line_opp_chip == 2:
+                j = line.index(' ')
+                return True, index[i][j]
+    ## check all vertical finishing moves avaialble to human
+    for i in range(0, 3):
+        line = []
+        for j in range(0, 3):
+            line.append(board[j][i])
+        line_empty = line.count(' ')
+        line_opp_chip = line.count(opp_chip)
+        if line_empty == 1 and line_opp_chip == 2:
+                j = line.index(' ')
+                return True, index[j][i]
+    ## check diagonal finishing moves avaialble to comp
+    ## check line 1a, 2b, 3c
+    line = []
+    line.append(board[0][0])
+    line.append(board[1][1])
+    line.append(board[2][2])
+    line_empty = line.count(' ')
+    line_opp_chip = line.count(opp_chip)
+    if line_empty == 1 and line_opp_chip == 2:
+            j = line.index(' ')
+            return True, index[j][j]
+
+    ## check line 1c, 2b, 3a
+    line = []
+    line.append(board[0][2])
+    line.append(board[1][1])
+    line.append(board[2][0])
+    line_empty = line.count(' ')
+    line_opp_chip = line.count(opp_chip)
+    if line_empty == 1 and line_opp_chip == 2:
+            j = line.index(' ')
+            return True, index[j][2 - j]
+
+    ## if no finishing move avaialble return False and no move
     return False, ' '
 
 def human_turn(player_chip, index, board, turn, index2):
@@ -216,13 +280,16 @@ def human_turn(player_chip, index, board, turn, index2):
         print draw_board(board)
     return turn
 
-def comp_turn(player_chip, index, board, turn, random, time, index2):
+def comp_turn(player_chip, opp_chip, index, board, turn, random, time, index2):
     print 'It is computers turn'
     can_comp_fin, comp_fin_moveref = comp_finmove(board, player_chip)
+    can_comp_block, comp_block_moveref = comp_block_opp_fin(board, opp_chip)
     if len(empty_spaces(board)) == 9:
         comp_move = comp_opening_move()
     elif can_comp_fin == True:
         comp_move = comp_fin_moveref
+    elif can_comp_block == True:
+        comp_move = comp_block_moveref
     else:
         comp_move = comp_random_move(random)
     time.sleep(1)
@@ -262,7 +329,7 @@ def vs_comp():
             turn = human_turn(player_chip, index, board, turn, index2)
         ## runs through computers turn
         if player_chip == 'x':
-            turn = comp_turn(player_chip, index, board, turn, random, time, index2)
+            turn = comp_turn(player_chip, opp_chip, index, board, turn, random, time, index2)
         ## ends procedure if game has been won
         if turn == -1:
             return
