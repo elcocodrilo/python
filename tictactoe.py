@@ -6,6 +6,8 @@ board = [[' ', ' ', ' '], [' ', ' ', ' '], [' ', ' ', ' ']]
 ## create index used for player input to enter the square
 index = [['1a', '1b', '1c'], ['2a', '2b', '2c'], ['3a', '3b', '3c']]
 index2 = [['a1', 'b1', 'c1'], ['a2', 'b2', 'c2'], ['a3', 'b3', 'c3']]
+valid_moves = ['1a', '1b', '1c', '2a', '2b', '2c', '3a', '3b', '3c',
+'a1', 'b1', 'c1', 'a2', 'b2', 'c2', 'a3', 'b3', 'c3']
 
 def draw_board(board):
     print '\n'
@@ -94,8 +96,13 @@ def comp_opening_move():
 
 def who_starts():
     print ''
-    coin_side = raw_input('Do you want (h)eads or (t)ails? ')
-
+    valid_coin = False
+    while valid_coin == False:
+        coin_side = raw_input('Do you want (h)eads or (t)ails? ')
+        if coin_side == 'h' or coin_side == 't':
+            valid_coin = True
+        else:
+            print "\nyour input is invalid. Try again.\n"
     if coin_side == 'h':
         coin_side_long = "heads"
         coin_side_bin = 0
@@ -107,13 +114,13 @@ def who_starts():
     import time
     time.sleep(1)
     print 'Coin has been flipped\n'
-    time.sleep(1)
+    time.sleep(0.5)
     print 'Coin is in the air, which side will it land on?\n'
-    time.sleep(1)
+    time.sleep(0.5)
     print 'This will determine who starts the game\n'
-    time.sleep(1)
+    time.sleep(0.5)
     print 'OMG\n'
-    time.sleep(1)
+    time.sleep(0.5)
     print 'coin about to land!\n'
     time.sleep(1)
     import random
@@ -258,10 +265,12 @@ def human_turn(player_chip, index, board, turn, index2):
     ## Displays who's turn it is and requests player move
     print "It is your turn Player: " + player_chip
     loc_in = raw_input("Where would you like to move to? ")
-
+    ## check if user has entered invalid input
+    if valid_moves.count(loc_in) == 0:
+        print "\nYour input is invalid try again\n"
+        return turn
     ## assign i and j using tfr_loc()
     i, j = tfr_loc(loc_in, index, index2)
-
     ## check if space is free using space_free()
     if space_free(i, j) == True:
         ## update board to include new move
@@ -276,7 +285,7 @@ def human_turn(player_chip, index, board, turn, index2):
         ## turn count increases to next turn
         turn = turn + 1
     else:
-        print "The space you have selected is either invalid or not occupied"
+        print "\nThe space you have selected is occupied"
         print draw_board(board)
     return turn
 
@@ -314,7 +323,7 @@ def vs_comp():
     import time
     import random
 
-    print "computer is the 'x' and you are the 'o'"
+    print "\ncomputer is the 'x' and you are the 'o'"
     print "we will flip a coin to see who starts"
     do_you_start = who_starts()
     ## print empty board
