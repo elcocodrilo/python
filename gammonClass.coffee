@@ -60,17 +60,18 @@ class Backgammon
     @turn = 1
 
     # initialize the opening position (see backgammon rules)
-  #  @board[23] = -2
-  #  @board[0]  =  2
+    @board[23] = -2
+    @board[0]  =  2
 
     @board[5]  = -5
     @board[18] =  5
 
-  #  @board[7]  = -3
-  #  @board[16] =  3
+    @board[7]  = -3
+    @board[16] =  3
 
-  #  @board[11] =  5
-  #  @board[12] = -5
+    @board[11] =  5
+    @board[12] = -5
+    console.log(@board)
 
 
   move: (team, position, di)->
@@ -191,11 +192,6 @@ class Backgammon
     return true
 
   display:()->
-    #x = [0..23]
-    #y = new Array(24).fill(0)
-    #for i in x
-    #  y[i]=i
-    #console.log 'board:', y
     console.log 'board:' , @board
     console.log 'Jail:' , @jail
 
@@ -267,3 +263,39 @@ class Backgammon
 
     # If a roll off is permitted, but there is no mandartoy piece which must be taken off
     # then the move function is used
+game = new Backgammon()
+
+game.display()
+game.move 'black',12 , 5
+game.move 'black',12, 5
+game.move 'black',12 , 5
+game.move 'black',12 , 5
+game.move 'white',11, 2
+game.move 'white',13, 3
+game.move 'black',7 , 5
+game.move 'black',5 , 2
+game.move 'white',0, 3
+game.move 'white',11, 1
+game.escape 'black', 4
+game.move 'white',0, 2
+game.move 'white',2, 6
+game.escape 'black' , 3
+game.move 'white',16, 2
+game.move 'white',11, 1
+game.escape 'black' , 3
+game.move 'black', 23, 1
+game.move 'white',3, 1
+game.move 'white',4, 4
+game.move 'black', 5, 4
+game.move 'black', 7, 6
+game.move 'white',11, 1
+game.move 'white',11, 5
+game.move 'black', 5, 3
+game.move 'black', 7, 5
+game.move 'white',18, 2
+game.move 'white',12, 1
+game.escape 'black', 1
+game.move 'black' , 22, 2
+game.escape 'white', 3
+game.move 'black',23, 6
+game.move 'black',23, 4
