@@ -2,7 +2,7 @@
 ## in a row either vert horiz or diagonally
 
 ## create empty board
-board = [[' ', ' ', ' '], [' ', ' ', ' '], [' ', ' ', ' ']]
+board = [[' ', ' ',' '],[' ', ' ',' '],[' ', ' ',' ']]
 ## create index used for player input to enter the square
 index = [['1a', '1b', '1c'], ['2a', '2b', '2c'], ['3a', '3b', '3c']]
 index2 = [['a1', 'b1', 'c1'], ['a2', 'b2', 'c2'], ['a3', 'b3', 'c3']]
@@ -19,8 +19,8 @@ def draw_board(board):
     print '    -----------'
     print ' 3 | ' + board[2][0] + ' | ' + board[2][1] + ' | ' + board[2][2] + ' |'
     print '    -----------'
-    print '\n'
-    return
+    return '\n'
+
 
 ## transfer player input to find location on the board
 ## takes the location input and the index nested list, returns i (for row) and j (for column)
@@ -36,10 +36,7 @@ def tfr_loc(loc_in, index, index2):
 ## check if space is free - takes row and column info from index and checks if the space is empty
 ## and therefore free to be moved into
 def space_free(i, j):
-    if board[i][j] == ' ':
-        return True
-    else:
-        return False
+    return board[i][j] == ' '
 
 ## set up a test to see if the winning condition has been met on the board list
 def win_cond(board):
@@ -341,10 +338,10 @@ def vs_comp():
             turn = comp_turn(player_chip, opp_chip, index, board, turn, random, time, index2)
         ## ends procedure if game has been won
         if turn == -1:
-            return
+            return "\nPlay again soon!"
         ## If all board filled up display draw message
         if turn == 9:
-            print "This game is a draw."
+            return "This game is a draw.\n\nPlay again soon!"
     return
 
 ## two_player_game() runs the game until it is won lost or drawn
